@@ -1,0 +1,443 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<link rel="icon" href="data:," /><!-- suppress favicon request; swap for a real icon if desired -->
+
+<!--
+  ════════════════════════════════════════════════════════════════════════
+  EXPLAINER TEMPLATE — canonical self-contained skeleton.
+
+  HOW TO USE: copy this folder to /<your-slug>/, then fill in the content.
+  Everything (CSS + JS) is inlined on purpose: each explainer is one portable
+  file with no build step. Keep it that way. See ../CLAUDE.md for the full
+  voice, structure, and interactivity rules.
+
+  Replace every  [[ ... ]]  placeholder. Delete the parts you don't use.
+  ════════════════════════════════════════════════════════════════════════
+-->
+
+<title>[[Title]] — Explainers</title>
+<meta name="description" content="[[One-line teaser that makes someone curious.]]" />
+
+<!-- Social preview (optional but nice). Use a relative path under the Pages subpath. -->
+<meta property="og:title" content="[[Title]]" />
+<meta property="og:description" content="[[One-line teaser.]]" />
+<meta property="og:type" content="article" />
+
+<!--
+  MATH (optional): uncomment to enable KaTeX. Only include it if the explainer
+  actually has equations — don't pay the cost otherwise. Then write math as
+  \( inline \) or use a display block. Always explain the mechanism in words
+  FIRST, show the equation prefaced with "don't panic", then annotate symbols.
+-->
+<!--
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.16.11/dist/katex.min.css" crossorigin="anonymous" />
+<script defer src="https://cdn.jsdelivr.net/npm/katex@0.16.11/dist/katex.min.js" crossorigin="anonymous"></script>
+<script defer src="https://cdn.jsdelivr.net/npm/katex@0.16.11/dist/contrib/auto-render.min.js" crossorigin="anonymous"
+  onload="renderMathInElement(document.body, {delimiters:[{left:'\\(',right:'\\)',display:false},{left:'$$',right:'$$',display:true}]})"></script>
+-->
+
+<style>
+/* ── Design tokens ─────────────────────────────────────────────────────────
+   These are the shared design language. Copy them verbatim into every
+   explainer so the whole collection looks like one site. Tweak values per
+   explainer only for a topic-specific accent. */
+:root {
+  /* Type: system stacks by default → zero external font dependency, fully
+     self-contained. (Swap in a Google Font link if a topic really calls for it.) */
+  --font-prose: Georgia, 'Iowan Old Style', 'Palatino Linotype', 'Times New Roman', serif;
+  --font-ui: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
+  --font-mono: ui-monospace, 'SF Mono', SFMono-Regular, Menlo, Consolas, monospace;
+
+  /* Color: warm "paper", high-contrast ink, ONE accent. */
+  --bg: #fdfdfc;
+  --surface: #ffffff;
+  --text: #1a1a1a;
+  --muted: #6b6b6b;
+  --border: #e6e4df;
+  --accent: #2563eb;
+  --accent-soft: #eaf0ff;
+  --shadow: 0 1px 2px rgba(20,20,20,.05), 0 10px 30px rgba(20,20,20,.05);
+
+  /* Layout */
+  --measure: 680px;     /* comfortable reading width */
+  --wide: 880px;        /* demos may break out a little wider */
+  --radius: 12px;
+}
+@media (prefers-color-scheme: dark) {
+  :root {
+    --bg: #14151a;
+    --surface: #1c1e26;
+    --text: #e9e9ee;
+    --muted: #9a9aa6;
+    --border: #2c2f3a;
+    --accent: #7aa2ff;
+    --accent-soft: #1d2740;
+    --shadow: 0 1px 2px rgba(0,0,0,.4), 0 10px 30px rgba(0,0,0,.35);
+  }
+}
+
+* { box-sizing: border-box; }
+html { -webkit-text-size-adjust: 100%; }
+body {
+  margin: 0;
+  background: var(--bg);
+  color: var(--text);
+  font-family: var(--font-prose);
+  font-size: 1.18rem;
+  line-height: 1.65;
+  text-rendering: optimizeLegibility;
+  -webkit-font-smoothing: antialiased;
+}
+
+/* Centered single column. Children opt into wider via .bleed. */
+.wrap { max-width: var(--measure); margin: 0 auto; padding: 2.5rem 1.25rem 4rem; }
+
+/* ── Header ───────────────────────────────────────────────────────────── */
+.kicker { font-family: var(--font-ui); font-size: .9rem; margin: 0 0 1.5rem; }
+.kicker a { color: var(--muted); text-decoration: none; }
+.kicker a:hover { color: var(--accent); }
+h1 {
+  font-family: var(--font-ui);
+  font-weight: 800;
+  font-size: clamp(2rem, 6vw, 3rem);
+  line-height: 1.1;
+  letter-spacing: -0.02em;
+  margin: 0 0 .6rem;
+}
+.subtitle { font-size: 1.3rem; color: var(--muted); margin: 0 0 1.25rem; font-style: italic; }
+.byline { font-family: var(--font-ui); font-size: .9rem; color: var(--muted); margin: 0 0 2rem; }
+
+/* ── Table of contents ────────────────────────────────────────────────── */
+.toc {
+  font-family: var(--font-ui);
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  padding: 1rem 1.25rem;
+  margin: 0 0 3rem;
+  box-shadow: var(--shadow);
+}
+.toc-title { font-size: .8rem; text-transform: uppercase; letter-spacing: .08em; color: var(--muted); margin: 0 0 .5rem; }
+.toc ol { margin: 0; padding-left: 1.2rem; }
+.toc li { margin: .2rem 0; }
+.toc a { color: var(--text); text-decoration: none; }
+.toc a:hover { color: var(--accent); text-decoration: underline; }
+
+/* ── Prose ────────────────────────────────────────────────────────────── */
+.prose h2 {
+  font-family: var(--font-ui);
+  font-weight: 750;
+  font-size: 1.7rem;
+  letter-spacing: -0.01em;
+  margin: 3rem 0 1rem;
+  scroll-margin-top: 1rem;
+}
+.prose h3 { font-family: var(--font-ui); font-size: 1.25rem; margin: 2rem 0 .75rem; }
+.prose p { margin: 0 0 1.25rem; }
+.prose a { color: var(--accent); text-decoration-thickness: 1px; text-underline-offset: 2px; }
+.prose strong { font-weight: 700; }
+.prose code { font-family: var(--font-mono); font-size: .9em; background: var(--accent-soft); padding: .1em .35em; border-radius: 5px; }
+.prose blockquote {
+  margin: 1.5rem 0; padding: .25rem 0 .25rem 1.25rem;
+  border-left: 3px solid var(--accent); color: var(--muted); font-style: italic;
+}
+
+/* ── "Well, ackshually" asides — layered depth for the curious ─────────── */
+.aside {
+  font-family: var(--font-ui);
+  font-size: .95rem;
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  padding: .5rem 1rem;
+  margin: 1.5rem 0;
+}
+.aside summary { cursor: pointer; font-weight: 600; color: var(--accent); }
+.aside[open] summary { margin-bottom: .5rem; }
+.aside > *:not(summary) { line-height: 1.55; }
+
+/* ── Interactive demo ─────────────────────────────────────────────────── */
+.demo {
+  margin: 2rem 0;
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  box-shadow: var(--shadow);
+  overflow: hidden;
+}
+.demo .stage { display: block; width: 100%; background: var(--surface); }
+.demo .controls {
+  font-family: var(--font-ui);
+  display: flex; flex-wrap: wrap; gap: 1rem 1.5rem;
+  align-items: center;
+  padding: 1rem 1.25rem;
+  border-top: 1px solid var(--border);
+}
+.demo .control { display: flex; flex-direction: column; gap: .25rem; min-width: 140px; flex: 1 1 140px; }
+.demo .control label { font-size: .8rem; color: var(--muted); display: flex; justify-content: space-between; }
+.demo .control output { font-variant-numeric: tabular-nums; color: var(--text); font-weight: 600; }
+.demo input[type="range"] { width: 100%; accent-color: var(--accent); cursor: pointer; }
+.demo button {
+  font-family: var(--font-ui); font-size: .9rem; font-weight: 600;
+  color: #fff; background: var(--accent); border: 0; border-radius: 8px;
+  padding: .5rem .9rem; cursor: pointer;
+}
+.demo button.secondary { color: var(--accent); background: var(--accent-soft); }
+.demo button:focus-visible, .demo input:focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; }
+.demo figcaption {
+  font-family: var(--font-ui); font-size: .85rem; color: var(--muted);
+  padding: .75rem 1.25rem 1rem;
+}
+.demo figcaption .num { color: var(--accent); font-weight: 700; }
+
+/* ── Prediction challenge ─────────────────────────────────────────────── */
+.predict {
+  font-family: var(--font-ui);
+  background: var(--accent-soft);
+  border: 1px solid var(--accent);
+  border-radius: var(--radius);
+  padding: 1.25rem 1.5rem;
+  margin: 2rem 0;
+}
+.predict h3 { margin-top: 0; }
+
+/* ── Footer ───────────────────────────────────────────────────────────── */
+.explainer-footer {
+  font-family: var(--font-ui); font-size: .9rem; color: var(--muted);
+  border-top: 1px solid var(--border); margin-top: 4rem; padding-top: 1.5rem;
+}
+.explainer-footer a { color: var(--accent); text-decoration: none; }
+
+/* ── Responsive ───────────────────────────────────────────────────────── */
+@media (max-width: 640px) {
+  body { font-size: 1.08rem; }
+  .wrap { padding: 1.75rem 1.1rem 3rem; }
+  .demo .control { min-width: 100%; }
+}
+@media (prefers-reduced-motion: reduce) {
+  * { scroll-behavior: auto !important; }
+}
+</style>
+</head>
+
+<body>
+<div class="wrap">
+
+  <!-- ── HEADER ──────────────────────────────────────────────────────── -->
+  <header>
+    <p class="kicker"><a href="../">← All explainers</a></p>
+    <h1>[[Title: the question, as a person would ask it]]</h1>
+    <p class="subtitle">[[Subtitle / teaser — hint at the surprising payoff.]]</p>
+    <p class="byline">[[Author]] · <time datetime="2026-06">Jun 2026</time> · [[N]] min read</p>
+  </header>
+
+  <!-- ── TABLE OF CONTENTS (mirror the section headings below) ───────── -->
+  <nav class="toc" aria-label="Table of contents">
+    <p class="toc-title">Contents</p>
+    <ol>
+      <li><a href="#s1">What even is [[the thing]]?</a></li>
+      <li><a href="#s2">How does it actually work?</a></li>
+      <li><a href="#s3">Wait, but what about [[the complication]]?</a></li>
+      <li><a href="#predict">Now you predict it</a></li>
+      <li><a href="#bigger">The bigger picture</a></li>
+    </ol>
+  </nav>
+
+  <!-- ── BODY ────────────────────────────────────────────────────────── -->
+  <main class="prose">
+
+    <!-- HOOK: open on a concrete, relatable scene. No throat-clearing. -->
+    <p>
+      [[Open with a vivid, specific moment the reader has lived. Make them feel
+      the question before you name it. End the first paragraph with the puzzle.]]
+    </p>
+
+    <!-- SECTION 1 — build intuition before any formalism -->
+    <section id="s1">
+      <h2>1 · What even is [[the thing]]?</h2>
+      <p>[[Start from the reader's existing intuition. One idea at a time.]]</p>
+
+      <!-- DEMO PATTERN — copy this <figure> for each interactive idea.
+           Give the canvas a unique id, wire controls in the script below. -->
+      <figure class="demo">
+        <canvas class="stage" id="demo1" height="280" aria-label="[[Describe what the visual shows, for screen readers.]]"></canvas>
+        <div class="controls">
+          <div class="control">
+            <label for="d1-freq">Frequency <output id="d1-freq-out">3</output></label>
+            <input type="range" id="d1-freq" min="1" max="12" value="3" step="1" />
+          </div>
+          <div class="control">
+            <label for="d1-amp">Amplitude <output id="d1-amp-out">0.7</output></label>
+            <input type="range" id="d1-amp" min="0.1" max="1" value="0.7" step="0.05" />
+          </div>
+          <button type="button" id="d1-play" class="secondary" aria-pressed="false">▶ Animate</button>
+        </div>
+        <figcaption><span class="num">Demo 1.</span> [[Tell the reader what to try and what to notice — e.g. "Drag frequency up. See how the wiggles bunch together?"]]</figcaption>
+      </figure>
+
+      <details class="aside">
+        <summary>Well, ackshually 🧐</summary>
+        <p>[[A precise caveat for the curious reader. Skimmers skip this; diggers
+        get rewarded. Keep the main text honest-but-simple and park the nuance here.]]</p>
+      </details>
+    </section>
+
+    <!-- SECTION 2 — the core mechanism -->
+    <section id="s2">
+      <h2>2 · How does it actually work?</h2>
+      <p>[[Now the mechanism. Use an analogy for the hard part. If there's an
+      equation, explain it in words first, then show it ("don't panic"), then
+      annotate each symbol.]]</p>
+    </section>
+
+    <!-- SECTION 3 — the complication / edge case -->
+    <section id="s3">
+      <h2>3 · Wait, but what about [[the complication]]?</h2>
+      <p>[[Address the obvious objection a smart reader just thought of.]]</p>
+    </section>
+
+    <!-- PREDICTION — "you don't understand it until you can predict it" -->
+    <section id="predict">
+      <h2>4 · Now you predict it</h2>
+      <div class="predict">
+        <h3>Your turn 🔮</h3>
+        <p>[[Pose a NEW scenario the reader hasn't seen and ask them to predict
+        the outcome with the model they just built. Then reveal the answer.]]</p>
+      </div>
+    </section>
+
+    <!-- SYNTHESIS -->
+    <section id="bigger">
+      <h2>The bigger picture</h2>
+      <p>[[Zoom out: name the concept, connect it to a wider family of ideas,
+      and CLOSE THE LOOP by returning to the opening scene.]]</p>
+    </section>
+
+  </main>
+
+  <!-- ── FOOTER ──────────────────────────────────────────────────────── -->
+  <footer class="explainer-footer">
+    <p>Part of <a href="../">Explainers</a> · built for understanding through play.</p>
+  </footer>
+
+</div>
+
+<script>
+/* ════════════════════════════════════════════════════════════════════════
+   Demo harness — tiny, dependency-free helpers every explainer can reuse.
+   Pattern: setupCanvas() handles crisp HiDPI sizing + an optional animation
+   loop that automatically respects prefers-reduced-motion.
+   ════════════════════════════════════════════════════════════════════════ */
+
+// Flip to true while developing to see verbose logs; ship with it false.
+const DEBUG = false;
+const log = (...a) => { if (DEBUG) console.log('[explainer]', ...a); };
+
+// Honor the OS "reduce motion" setting: no auto-animation for those users.
+const REDUCE_MOTION = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+
+/**
+ * Wire a <canvas> for crisp rendering on retina screens and (optionally) drive
+ * an animation loop. `draw(ctx, { w, h, t })` is called with CSS pixel
+ * dimensions and elapsed seconds `t`.
+ * Returns { redraw(), play(), pause(), toggle() -> bool isPlaying }.
+ */
+function setupCanvas(canvas, draw) {
+  const ctx = canvas.getContext('2d');
+  let w = 0, h = 0, raf = 0, playing = false, start = 0;
+
+  function resize() {
+    const dpr = Math.min(window.devicePixelRatio || 1, 2);
+    const rect = canvas.getBoundingClientRect();
+    w = rect.width || canvas.clientWidth || 600;
+    h = parseInt(canvas.getAttribute('height'), 10) || 280;
+    canvas.style.height = h + 'px';
+    canvas.width = Math.round(w * dpr);
+    canvas.height = Math.round(h * dpr);
+    ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
+    redraw();
+  }
+
+  function redraw(t = 0) {
+    ctx.clearRect(0, 0, w, h);
+    draw(ctx, { w, h, t });
+  }
+
+  function frame(now) {
+    if (!playing) return;
+    if (!start) start = now;
+    redraw((now - start) / 1000);
+    raf = requestAnimationFrame(frame);
+  }
+
+  function play() {
+    if (REDUCE_MOTION || playing) { redraw(); return; }  // never auto-animate under reduce-motion
+    playing = true; start = 0; raf = requestAnimationFrame(frame);
+  }
+  function pause() { playing = false; cancelAnimationFrame(raf); }
+  function toggle() { playing ? pause() : play(); return playing; }
+
+  window.addEventListener('resize', resize, { passive: true });
+  resize();
+  return { redraw, play, pause, toggle, get playing() { return playing; } };
+}
+
+/* ── Example wiring for Demo 1 (a controllable sine wave) ─────────────────
+   This is here to PROVE the pattern end-to-end: sliders mutate state, the
+   canvas redraws live, the button toggles an rAF animation. Replace the
+   draw() body with your topic's visualization; keep the wiring shape. */
+(function demo1() {
+  const canvas = document.getElementById('demo1');
+  if (!canvas) return;
+
+  const state = { freq: 3, amp: 0.7 };
+
+  function readVar(name, fallback) {
+    return getComputedStyle(document.documentElement).getPropertyValue(name).trim() || fallback;
+  }
+
+  const wave = setupCanvas(canvas, (ctx, { w, h, t }) => {
+    const mid = h / 2;
+    // baseline
+    ctx.strokeStyle = readVar('--border', '#e6e4df');
+    ctx.lineWidth = 1;
+    ctx.beginPath(); ctx.moveTo(0, mid); ctx.lineTo(w, mid); ctx.stroke();
+    // the wave
+    ctx.strokeStyle = readVar('--accent', '#2563eb');
+    ctx.lineWidth = 2.5;
+    ctx.beginPath();
+    for (let x = 0; x <= w; x++) {
+      const phase = (x / w) * state.freq * Math.PI * 2 + t * 2;
+      const y = mid - Math.sin(phase) * state.amp * (mid - 16);
+      x === 0 ? ctx.moveTo(x, y) : ctx.lineTo(x, y);
+    }
+    ctx.stroke();
+  });
+
+  // Slider → state → redraw, with the <output> label kept in sync.
+  function bind(id, key, parse = parseFloat) {
+    const input = document.getElementById(id);
+    const out = document.getElementById(id + '-out');
+    const sync = () => { state[key] = parse(input.value); if (out) out.textContent = input.value; wave.redraw(); };
+    input.addEventListener('input', sync);
+    sync();
+  }
+  bind('d1-freq', 'freq');
+  bind('d1-amp', 'amp');
+
+  const playBtn = document.getElementById('d1-play');
+  playBtn.addEventListener('click', () => {
+    const isPlaying = wave.toggle();
+    playBtn.setAttribute('aria-pressed', String(isPlaying));
+    playBtn.textContent = isPlaying ? '⏸ Pause' : '▶ Animate';
+  });
+  if (REDUCE_MOTION) { playBtn.disabled = true; playBtn.title = 'Animation disabled (reduce-motion is on)'; }
+
+  log('demo1 ready');
+})();
+</script>
+</body>
+</html>

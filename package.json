@@ -1,0 +1,15 @@
+{
+  "name": "explainers",
+  "version": "0.1.0",
+  "private": true,
+  "description": "Interactive, self-contained HTML explainers, deployed as a static GitHub Pages site.",
+  "license": "MIT",
+  "author": "digster",
+  "scripts": {
+    "test": "playwright test",
+    "serve": "python3 -m http.server 4173"
+  },
+  "devDependencies": {
+    "@playwright/test": "^1.49.0"
+  }
+}
