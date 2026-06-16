@@ -1,0 +1,1041 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<link rel="icon" href="data:," />
+
+<title>How can a shape be infinitely detailed? — Explainers</title>
+<meta name="description" content="Self-similarity, the coastline paradox, fractal dimension, and the Mandelbrot set — all from simple rules you can play with." />
+<meta property="og:title" content="Fractals: how a shape can be infinitely detailed" />
+<meta property="og:description" content="Ferns, coastlines, and the Mandelbrot set — all from a rule you can write on a napkin." />
+<meta property="og:type" content="article" />
+
+<style>
+/* ── Design tokens (copied verbatim from template/index.html) ───────────── */
+:root {
+  --font-prose: Georgia, 'Iowan Old Style', 'Palatino Linotype', 'Times New Roman', serif;
+  --font-ui: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
+  --font-mono: ui-monospace, 'SF Mono', SFMono-Regular, Menlo, Consolas, monospace;
+  --bg: #fdfdfc;
+  --surface: #ffffff;
+  --text: #1a1a1a;
+  --muted: #6b6b6b;
+  --border: #e6e4df;
+  --accent: #2563eb;
+  --accent-soft: #eaf0ff;
+  --shadow: 0 1px 2px rgba(20,20,20,.05), 0 10px 30px rgba(20,20,20,.05);
+  --measure: 680px;
+  --wide: 880px;
+  --radius: 12px;
+}
+@media (prefers-color-scheme: dark) {
+  :root {
+    --bg: #14151a;
+    --surface: #1c1e26;
+    --text: #e9e9ee;
+    --muted: #9a9aa6;
+    --border: #2c2f3a;
+    --accent: #7aa2ff;
+    --accent-soft: #1d2740;
+    --shadow: 0 1px 2px rgba(0,0,0,.4), 0 10px 30px rgba(0,0,0,.35);
+  }
+}
+
+* { box-sizing: border-box; }
+html { -webkit-text-size-adjust: 100%; }
+body {
+  margin: 0;
+  background: var(--bg);
+  color: var(--text);
+  font-family: var(--font-prose);
+  font-size: 1.18rem;
+  line-height: 1.65;
+  text-rendering: optimizeLegibility;
+  -webkit-font-smoothing: antialiased;
+}
+.wrap { max-width: var(--measure); margin: 0 auto; padding: 2.5rem 1.25rem 4rem; }
+
+.kicker { font-family: var(--font-ui); font-size: .9rem; margin: 0 0 1.5rem; }
+.kicker a { color: var(--muted); text-decoration: none; }
+.kicker a:hover { color: var(--accent); }
+h1 {
+  font-family: var(--font-ui);
+  font-weight: 800;
+  font-size: clamp(2rem, 6vw, 3rem);
+  line-height: 1.1;
+  letter-spacing: -0.02em;
+  margin: 0 0 .6rem;
+}
+.subtitle { font-size: 1.3rem; color: var(--muted); margin: 0 0 1.25rem; font-style: italic; }
+.byline { font-family: var(--font-ui); font-size: .9rem; color: var(--muted); margin: 0 0 2rem; }
+
+.toc {
+  font-family: var(--font-ui);
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  padding: 1rem 1.25rem;
+  margin: 0 0 3rem;
+  box-shadow: var(--shadow);
+}
+.toc-title { font-size: .8rem; text-transform: uppercase; letter-spacing: .08em; color: var(--muted); margin: 0 0 .5rem; }
+.toc ol { margin: 0; padding-left: 1.2rem; }
+.toc li { margin: .2rem 0; }
+.toc a { color: var(--text); text-decoration: none; }
+.toc a:hover { color: var(--accent); text-decoration: underline; }
+
+.prose h2 {
+  font-family: var(--font-ui);
+  font-weight: 750;
+  font-size: 1.7rem;
+  letter-spacing: -0.01em;
+  margin: 3rem 0 1rem;
+  scroll-margin-top: 1rem;
+}
+.prose h3 { font-family: var(--font-ui); font-size: 1.25rem; margin: 2rem 0 .75rem; }
+.prose p { margin: 0 0 1.25rem; }
+.prose a { color: var(--accent); text-decoration-thickness: 1px; text-underline-offset: 2px; }
+.prose strong { font-weight: 700; }
+.prose code { font-family: var(--font-mono); font-size: .9em; background: var(--accent-soft); padding: .1em .35em; border-radius: 5px; }
+.prose blockquote {
+  margin: 1.5rem 0; padding: .25rem 0 .25rem 1.25rem;
+  border-left: 3px solid var(--accent); color: var(--muted); font-style: italic;
+}
+
+.aside {
+  font-family: var(--font-ui);
+  font-size: .95rem;
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  padding: .5rem 1rem;
+  margin: 1.5rem 0;
+}
+.aside summary { cursor: pointer; font-weight: 600; color: var(--accent); }
+.aside[open] summary { margin-bottom: .5rem; }
+.aside > *:not(summary) { line-height: 1.55; }
+
+.demo {
+  margin: 2rem 0;
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  box-shadow: var(--shadow);
+  overflow: hidden;
+}
+.demo .stage { display: block; width: 100%; background: var(--surface); }
+.demo .controls {
+  font-family: var(--font-ui);
+  display: flex; flex-wrap: wrap; gap: 1rem 1.5rem;
+  align-items: center;
+  padding: 1rem 1.25rem;
+  border-top: 1px solid var(--border);
+}
+.demo .control { display: flex; flex-direction: column; gap: .25rem; min-width: 140px; flex: 1 1 140px; }
+.demo .control label { font-size: .8rem; color: var(--muted); display: flex; justify-content: space-between; gap: .5rem; }
+.demo .control output { font-variant-numeric: tabular-nums; color: var(--text); font-weight: 600; }
+.demo input[type="range"] { width: 100%; accent-color: var(--accent); cursor: pointer; }
+.demo select {
+  font-family: var(--font-ui); font-size: .95rem; padding: .4rem .5rem;
+  border: 1px solid var(--border); border-radius: 8px; background: var(--bg); color: var(--text);
+}
+.demo button {
+  font-family: var(--font-ui); font-size: .9rem; font-weight: 600;
+  color: #fff; background: var(--accent); border: 0; border-radius: 8px;
+  padding: .5rem .9rem; cursor: pointer;
+}
+.demo button.secondary { color: var(--accent); background: var(--accent-soft); }
+.demo button:focus-visible, .demo input:focus-visible, .demo select:focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; }
+.demo figcaption {
+  font-family: var(--font-ui); font-size: .85rem; color: var(--muted);
+  padding: .75rem 1.25rem 1rem;
+}
+.demo figcaption .num { color: var(--accent); font-weight: 700; }
+
+.predict {
+  font-family: var(--font-ui);
+  background: var(--accent-soft);
+  border: 1px solid var(--accent);
+  border-radius: var(--radius);
+  padding: 1.25rem 1.5rem;
+  margin: 2rem 0;
+}
+.predict h3 { margin-top: 0; }
+
+.explainer-footer {
+  font-family: var(--font-ui); font-size: .9rem; color: var(--muted);
+  border-top: 1px solid var(--border); margin-top: 4rem; padding-top: 1.5rem;
+}
+.explainer-footer a { color: var(--accent); text-decoration: none; }
+
+@media (max-width: 640px) {
+  body { font-size: 1.08rem; }
+  .wrap { padding: 1.75rem 1.1rem 3rem; }
+  .demo .control { min-width: 100%; }
+}
+@media (prefers-reduced-motion: reduce) {
+  * { scroll-behavior: auto !important; }
+}
+
+/* ── Explainer-specific bits ────────────────────────────────────────────── */
+/* A hand-rolled math display so the file stays self-contained (no KaTeX). */
+.formula {
+  font-family: var(--font-ui);
+  text-align: center;
+  font-size: 1.25rem;
+  margin: 1.5rem 0;
+  color: var(--text);
+}
+.frac { display: inline-flex; flex-direction: column; vertical-align: middle; text-align: center; margin: 0 .15em; }
+.frac .num { padding: 0 .4em; }
+.frac .den { padding: .1em .4em 0; border-top: 2px solid currentColor; }
+.formula .eq { color: var(--muted); margin: 0 .3em; }
+
+/* Demo 4 dimension read-out */
+.dim-readout { font-family: var(--font-ui); font-size: 1.05rem; text-align: center; padding: .25rem 1.25rem .5rem; }
+.dim-readout .big { font-size: 1.5rem; font-weight: 800; color: var(--accent); font-variant-numeric: tabular-nums; }
+
+/* Applications grid (Section 6) */
+.apps { font-family: var(--font-ui); display: grid; grid-template-columns: repeat(auto-fit, minmax(150px, 1fr)); gap: 1rem; margin: 2rem 0; padding: 0; list-style: none; }
+.apps li { background: var(--surface); border: 1px solid var(--border); border-radius: var(--radius); padding: 1rem; }
+.apps svg { display: block; width: 100%; height: 64px; margin-bottom: .5rem; }
+.apps .name { font-weight: 700; font-size: .95rem; }
+.apps .what { font-size: .85rem; color: var(--muted); }
+
+/* Reveal in the prediction box */
+.answer[hidden] { display: none; }
+.answer { margin-top: 1rem; padding-top: 1rem; border-top: 1px solid var(--accent); }
+.answer canvas { display: block; width: 100%; max-width: 300px; margin: 1rem auto 0; }
+</style>
+</head>
+
+<body>
+<div class="wrap">
+
+  <!-- ── HEADER ──────────────────────────────────────────────────────── -->
+  <header>
+    <p class="kicker"><a href="../">← All explainers</a></p>
+    <h1>How can a shape be infinitely detailed?</h1>
+    <p class="subtitle">Ferns, coastlines, and the Mandelbrot set — all grown from a rule you could write on a napkin.</p>
+    <p class="byline">Explainers · <time datetime="2026-06">Jun 2026</time> · 13 min read</p>
+  </header>
+
+  <!-- ── TABLE OF CONTENTS ───────────────────────────────────────────── -->
+  <nav class="toc" aria-label="Table of contents">
+    <p class="toc-title">Contents</p>
+    <ol>
+      <li><a href="#s1">What even <em>is</em> a fractal?</a></li>
+      <li><a href="#s2">Infinite detail from one tiny rule</a></li>
+      <li><a href="#s3">Wait — how long is the coastline?</a></li>
+      <li><a href="#s4">So what <em>dimension</em> is it?</a></li>
+      <li><a href="#s5">The Mandelbrot set: a universe from z² + c</a></li>
+      <li><a href="#s6">Why should I care?</a></li>
+      <li><a href="#predict">Now you predict it</a></li>
+      <li><a href="#bigger">The bigger picture</a></li>
+    </ol>
+  </nav>
+
+  <!-- ── BODY ────────────────────────────────────────────────────────── -->
+  <main class="prose">
+
+    <p>
+      Pick up a head of romanesco — that lime-green alien cousin of broccoli — at
+      the grocery store. Snap off one of the little cones. In your hand is a
+      smaller romanesco, bristling with even smaller cones, each of <em>those</em>
+      a tinier romanesco still. You could keep going until your fingers gave out
+      before the pattern did.
+    </p>
+    <p>
+      Nature does this everywhere. A fern frond is built from little fronds. A
+      tree is a trunk that splits into branches that split into twigs — each twig
+      a miniature tree. Your own lungs branch into bronchi into bronchioles, the
+      same forking rule fifteen times over. Lightning, river deltas, blood
+      vessels, snowflakes, the jagged edge of a coastline: all of them somehow
+      look <em>the same at every zoom level</em>.
+    </p>
+    <p>
+      Here's the puzzle. Smooth shapes — circles, cubes, the stuff of school
+      geometry — get <em>simpler</em> as you zoom in; a big enough circle looks
+      flat. These natural shapes do the opposite: zoom in and you find <em>more</em>
+      structure, not less. How does nature pack endless detail into a finite
+      thing? And — the part we'll really chase — can we make that detail ourselves,
+      from a rule simple enough to fit on a napkin?
+    </p>
+
+    <!-- SECTION 1 — self-similarity -->
+    <section id="s1">
+      <h2>1 · What even <em>is</em> a fractal?</h2>
+      <p>
+        Start with the one idea everything else hangs on: <strong>self-similarity</strong>.
+        A fractal is a shape whose parts look like the whole — not roughly, not
+        once, but again and again as you keep magnifying.
+      </p>
+      <p>
+        Think of a Russian nesting doll, except instead of <em>one</em> smaller
+        doll inside, each doll contains <em>two</em> copies of itself, each tilted
+        a bit. Open one and you get two slightly smaller trees. Open those and you
+        get four. The "tree" isn't really the trunk — it's the <em>rule</em>:
+        <em>a branch is just a smaller tree, rotated.</em>
+      </p>
+      <p>
+        Drag the sliders below. The angle changes how the copies tilt; the depth
+        is how many times we apply the rule before stopping. Watch how a couple of
+        numbers conjure something that looks unmistakably alive.
+      </p>
+
+      <figure class="demo">
+        <canvas class="stage" id="tree" height="340" aria-label="A fractal tree: each branch splits into two smaller branches, and every branch is itself a miniature copy of the whole tree."></canvas>
+        <div class="controls">
+          <div class="control">
+            <label for="t-angle">Branch angle <output id="t-angle-out">25</output>°</label>
+            <input type="range" id="t-angle" min="8" max="55" value="25" step="1" />
+          </div>
+          <div class="control">
+            <label for="t-depth">Recursion depth <output id="t-depth-out">9</output></label>
+            <input type="range" id="t-depth" min="1" max="12" value="9" step="1" />
+          </div>
+          <button type="button" id="t-grow" class="secondary">↻ Re-grow</button>
+        </div>
+        <figcaption><span class="num">Demo 1.</span> A tree drawn by one rule applied over and over: <em>draw a branch, then sprout two smaller branches at ±angle.</em> Crank the depth up — notice you never add new <em>instructions</em>, only new <em>repetitions</em>.</figcaption>
+      </figure>
+
+      <p>
+        That's the whole trick of a fractal, in miniature: <strong>the complexity
+        isn't in the rule, it's in the repetition.</strong> The instructions stay
+        tiny. You just follow them all the way down.
+      </p>
+
+      <details class="aside">
+        <summary>Well, ackshually 🧐</summary>
+        <p>
+          Our tree is <em>exactly</em> self-similar — each part is a perfect scaled
+          copy. Real trees (and ferns, and coastlines) are only <em>statistically</em>
+          self-similar: a zoomed-in piece has the same <em>character</em> as the
+          whole, not the identical shape. That looser kind is what makes nature
+          look natural instead of mechanical — and it's still very much a fractal.
+        </p>
+      </details>
+    </section>
+
+    <!-- SECTION 2 — iteration / Koch -->
+    <section id="s2">
+      <h2>2 · Infinite detail from one tiny rule</h2>
+      <p>
+        Let's make the "follow it all the way down" part concrete with the most
+        famous starter fractal, the <strong>Koch curve</strong>. The rule is almost
+        insultingly simple:
+      </p>
+      <blockquote>Take a straight line. Replace its middle third with a triangular
+        bump. Now do the same to every straight piece you just made. Repeat
+        forever.</blockquote>
+      <p>
+        One step turns 1 segment into 4. The next turns those 4 into 16, then 64,
+        then 256… Slide the depth up and watch a boring straight line sprout an
+        endlessly crinkled edge — using nothing but that single replacement.
+      </p>
+
+      <figure class="demo">
+        <canvas class="stage" id="koch" height="300" aria-label="The Koch curve: a straight line repeatedly replaced by a bumpier version of itself, growing more crinkled at each iteration."></canvas>
+        <div class="controls">
+          <div class="control">
+            <label for="k-depth">Iterations <output id="k-depth-out">3</output></label>
+            <input type="range" id="k-depth" min="0" max="6" value="3" step="1" />
+          </div>
+          <button type="button" id="k-mode" class="secondary">Make it a snowflake ❄</button>
+        </div>
+        <figcaption><span class="num">Demo 2.</span> Each step replaces every segment with four segments ⅓ as long. Tap the button to wrap the same rule around a triangle — that's the <em>Koch snowflake</em>, a finite area with an infinitely long border.</figcaption>
+      </figure>
+
+      <p>
+        Look at what just happened. After <em>n</em> steps the curve has
+        4<sup><em>n</em></sup> segments, each (⅓)<sup><em>n</em></sup> as long as
+        the original. Multiply those together and the total length is
+        (4/3)<sup><em>n</em></sup> — it grows by a third <em>every single step</em>,
+        with no ceiling. The Koch snowflake fences off a perfectly finite patch of
+        area behind a border of <em>infinite</em> length. That should feel a little
+        wrong. Hold onto that feeling — it's the door into the strangest idea here.
+      </p>
+    </section>
+
+    <!-- SECTION 3 — coastline paradox -->
+    <section id="s3">
+      <h2>3 · Wait — how long is the coastline?</h2>
+      <p>
+        In 1967 the mathematician Benoît Mandelbrot asked a question that sounds
+        like a child's and turns out to have no good answer: <em>how long is the
+        coastline of Britain?</em>
+      </p>
+      <p>
+        You'd think you just look it up. But measuring depends on the size of your
+        ruler. With a 100&nbsp;km ruler you stride past every bay and inlet and get
+        one number. With a 1&nbsp;km ruler you trace into each bay — and find a
+        longer coast. With a 1&nbsp;m ruler you wrap around every boulder; longer
+        still. The closer you look, the more wrinkles you resolve, and <em>the
+        total only ever goes up.</em>
+      </p>
+      <p>
+        Our Koch coastline lets you watch it happen. The slider is your ruler
+        length. Each straight segment is one ruler laid down. As you shrink the
+        ruler, count climbs, and the measured length climbs right along with it —
+        with no value it's settling toward.
+      </p>
+
+      <figure class="demo">
+        <canvas class="stage" id="coast" height="300" aria-label="A jagged coastline measured with rulers of adjustable length; as the ruler shrinks, the measured total length grows without bound."></canvas>
+        <div class="controls">
+          <div class="control">
+            <label for="c-ruler">Ruler length <output id="c-ruler-out">—</output></label>
+            <input type="range" id="c-ruler" min="0" max="5" value="1" step="1" />
+          </div>
+          <div class="dim-readout" style="text-align:left;padding:0">
+            <div>Rulers used: <strong id="c-count">—</strong></div>
+            <div>Measured length: <strong id="c-len">—</strong></div>
+          </div>
+        </div>
+        <figcaption><span class="num">Demo 3.</span> Same coast every time — only the ruler changes. Shorten it and the measured length <em>grows</em>. A coastline doesn't have a length so much as a length-<em>for-a-given-ruler</em>.</figcaption>
+      </figure>
+
+      <p>
+        This is the <strong>coastline paradox</strong>, and it's not a measuring
+        error you can fix with a better tape measure. The length genuinely
+        diverges. Which raises an uncomfortable question: if "length" is the wrong
+        ruler-independent way to describe how big this thing is… what's the right
+        one?
+      </p>
+    </section>
+
+    <!-- SECTION 4 — fractal dimension -->
+    <section id="s4">
+      <h2>4 · So what <em>dimension</em> is it?</h2>
+      <p>
+        Here's the leap. The right description isn't a length — it's a
+        <strong>dimension</strong>. And a fractal's dimension doesn't have to be a
+        whole number.
+      </p>
+      <p>
+        First, a way of thinking about ordinary dimension that has nothing to do
+        with "number of directions." Ask instead: <em>when I shrink a shape, how
+        many copies do I need to rebuild the original?</em>
+      </p>
+      <ul>
+        <li>A <strong>line</strong>, shrunk to ⅓ its length, takes <strong>3</strong>
+          copies to rebuild. 3 = 3<sup>1</sup>.</li>
+        <li>A <strong>square</strong>, shrunk to ⅓ on each side, takes <strong>9</strong>
+          copies. 9 = 3<sup>2</sup>.</li>
+        <li>A <strong>cube</strong>, shrunk to ⅓, takes <strong>27</strong>.
+          27 = 3<sup>3</sup>.</li>
+      </ul>
+      <p>
+        The exponent — 1, 2, 3 — is the dimension. So dimension is just the number
+        <em>D</em> that makes "copies = scale<sup><em>D</em></sup>" true. Don't
+        panic; solving for it is one line:
+      </p>
+
+      <div class="formula" aria-label="D equals log N divided by log s">
+        <em>D</em> <span class="eq">=</span>
+        <span class="frac"><span class="num">log&nbsp;<em>N</em></span><span class="den">log&nbsp;<em>s</em></span></span>
+      </div>
+      <p style="font-size:1rem;color:var(--muted);font-family:var(--font-ui)">
+        where <em>N</em> is how many little copies you get, and <em>s</em> is the
+        factor you shrank by. (Any base of log works — it cancels.)
+      </p>
+
+      <p>
+        Now point that at the Koch curve. Zoom in by 3× (<em>s</em>&nbsp;=&nbsp;3)
+        and you find <em>N</em>&nbsp;=&nbsp;4 copies of the whole curve. So its
+        dimension is log&nbsp;4 / log&nbsp;3 ≈ <strong>1.26</strong>. Not 1, not 2
+        — somewhere <em>in between</em>. That fractional number is exactly what the
+        coastline paradox was groping at: the curve is too crinkly to be a
+        1-dimensional line, but too thin to fill 2-dimensional area. Its
+        roughness <em>is</em> the 0.26.
+      </p>
+      <p>
+        Pick a shape below and watch the formula land on a number between the
+        integers.
+      </p>
+
+      <figure class="demo">
+        <canvas class="stage" id="dim" height="280" aria-label="Generated pictures of the Cantor set, Koch curve, Sierpinski triangle, and Sierpinski carpet, each labelled with its fractal dimension."></canvas>
+        <div class="dim-readout" id="dim-readout"></div>
+        <div class="controls">
+          <div class="control">
+            <label for="dim-shape">Construction</label>
+            <select id="dim-shape">
+              <option value="cantor">Cantor set (remove middle thirds)</option>
+              <option value="koch" selected>Koch curve</option>
+              <option value="sierpinski">Sierpiński triangle</option>
+              <option value="carpet">Sierpiński carpet</option>
+            </select>
+          </div>
+        </div>
+        <figcaption><span class="num">Demo 4.</span> Each shape is "<em>N</em> copies of itself, each <em>1/s</em> as big." The dimension <em>D</em> = log&nbsp;<em>N</em>/log&nbsp;<em>s</em> measures how aggressively it fills space — and it almost never comes out whole.</figcaption>
+      </figure>
+
+      <details class="aside">
+        <summary>Well, ackshually 🧐</summary>
+        <p>
+          What we're computing is the <em>similarity dimension</em>, which is easy
+          because these shapes are made of exact copies. For messier sets
+          (real coastlines, the boundary of the Mandelbrot set) mathematicians use
+          the <em>box-counting</em> and <em>Hausdorff</em> dimensions. They agree
+          with this one on nice self-similar fractals and generalize it to
+          everything else. "Fractal," loosely, means a shape whose dimension is
+          larger than its plain old topological dimension.
+        </p>
+      </details>
+    </section>
+
+    <!-- SECTION 5 — Mandelbrot -->
+    <section id="s5">
+      <h2>5 · The Mandelbrot set: a universe from z² + c</h2>
+      <p>
+        So far every fractal was built by <em>explicitly</em> copying a shape. The
+        most famous fractal of all is built a completely different way — and the
+        rule is even smaller. It works on points in the plane, where each point
+        <em>c</em> is treated as a number you can square and add. Pick a point,
+        start at zero, and repeat one step:
+      </p>
+
+      <div class="formula" aria-label="z sub n plus one equals z sub n squared plus c">
+        <em>z</em><sub>n+1</sub> <span class="eq">=</span> <em>z</em><sub>n</sub><sup>2</sup> <span class="eq">+</span> <em>c</em>
+      </div>
+
+      <p>
+        For some points <em>c</em>, the numbers stay small forever, politely
+        orbiting near zero. For others they blow up to infinity almost
+        immediately. Color a point black if it stays bounded, and shade it by
+        <em>how fast</em> it escapes if it doesn't. That's the entire recipe. The
+        black region is the <strong>Mandelbrot set</strong>.
+      </p>
+      <p>
+        That dead-simple feedback loop produces what's been called the most
+        complicated object in mathematics: spirals, lightning, seahorse tails,
+        and — crucially — <em>tiny perfect copies of the whole set</em> buried
+        infinitely deep along its edge. Click anywhere to dive in. (No fast
+        animation; each click just renders the new view.)
+      </p>
+
+      <figure class="demo">
+        <canvas class="stage" id="mandel" height="420" style="cursor: zoom-in;" aria-label="An interactive render of the Mandelbrot set. Click to zoom into the boundary, where ever-smaller copies of the whole set appear."></canvas>
+        <div class="controls">
+          <div class="control">
+            <label for="m-iter">Detail (max iterations) <output id="m-iter-out">160</output></label>
+            <input type="range" id="m-iter" min="50" max="500" value="160" step="10" />
+          </div>
+          <button type="button" id="m-reset" class="secondary">Reset</button>
+          <button type="button" id="m-out" class="secondary">Zoom out</button>
+          <button type="button" id="m-seahorse" class="secondary">🐎 Seahorse Valley</button>
+          <button type="button" id="m-mini" class="secondary">🔬 Find a mini-me</button>
+        </div>
+        <figcaption><span class="num">Demo 5.</span> Click to zoom (each click halves the window); raise <em>detail</em> when deep zooms look flat. The "🔬 mini-me" jump lands you on a miniature Mandelbrot set far out on the antenna — same shape, born of the same rule, billions of times smaller.</figcaption>
+      </figure>
+
+      <p>
+        Notice it's <em>not</em> exactly self-similar like the tree or the Koch
+        curve — the little copies are warped, wreathed in fresh filigree, never
+        quite the same twice. It's self-similar in spirit, not in photocopy. One
+        line of arithmetic, iterated, holds an endless and endlessly varied world.
+      </p>
+    </section>
+
+    <!-- SECTION 6 — applications -->
+    <section id="s6">
+      <h2>6 · Why should I care?</h2>
+      <p>
+        Because fractals are how nature solves a recurring problem: <em>pack a huge
+        amount of something into a small space, cheaply.</em> When you need maximum
+        surface, reach, or coverage on a budget, branching-and-repeating beats any
+        smooth shape — so evolution and engineering both keep rediscovering it.
+      </p>
+
+      <ul class="apps" aria-label="Places fractals show up">
+        <li>
+          <svg viewBox="0 0 100 64" role="img" aria-label="Branching lungs"><g fill="none" stroke="var(--accent)" stroke-width="2" stroke-linecap="round"><path d="M50 60 V36"/><path d="M50 36 L36 24 M50 36 L64 24"/><path d="M36 24 L28 16 M36 24 L42 14 M64 24 L58 14 M64 24 L72 16"/><path d="M28 16 l-5 -6 M28 16 l3 -6 M42 14 l-3 -6 M42 14 l4 -5 M58 14 l-4 -5 M58 14 l3 -6 M72 16 l-3 -6 M72 16 l5 -6"/></g></svg>
+          <div class="name">Lungs &amp; blood vessels</div>
+          <div class="what">Branching fits ~70&nbsp;m² of gas-exchange surface inside your chest.</div>
+        </li>
+        <li>
+          <svg viewBox="0 0 100 64" role="img" aria-label="River network"><g fill="none" stroke="var(--accent)" stroke-width="2" stroke-linecap="round"><path d="M50 62 V40"/><path d="M50 40 C40 34 38 26 30 20 M50 40 C60 34 62 28 70 22"/><path d="M30 20 l-7 -6 M30 20 l-2 -8 M70 22 l7 -6 M70 22 l1 -8 M50 40 l-1 -10"/></g></svg>
+          <div class="name">Rivers &amp; deltas</div>
+          <div class="what">Drainage networks branch to collect water from every acre of land.</div>
+        </li>
+        <li>
+          <svg viewBox="0 0 100 64" role="img" aria-label="Zigzag fractal antenna"><polyline points="10,44 22,20 34,44 46,20 58,44 70,20 82,44" fill="none" stroke="var(--accent)" stroke-width="2" stroke-linejoin="round"/></svg>
+          <div class="name">Fractal antennas</div>
+          <div class="what">Crinkling a wire packs many wavelengths in — the antenna hiding in your phone.</div>
+        </li>
+        <li>
+          <svg viewBox="0 0 100 64" role="img" aria-label="Jagged mountain range"><path d="M6 58 L24 26 L33 38 L48 12 L60 34 L72 18 L94 58 Z" fill="var(--accent-soft)" stroke="var(--accent)" stroke-width="2" stroke-linejoin="round"/></svg>
+          <div class="name">CGI landscapes</div>
+          <div class="what">Films and games grow mountains, clouds, and coastlines with fractal noise.</div>
+        </li>
+      </ul>
+
+      <p>
+        The same math turns up in image compression, in models of how prices lurch
+        around in markets (Mandelbrot again, warning that wild swings are normal,
+        not freak events), and in the antenna quietly receiving this very page.
+        Once you have the eye for it, the branching is everywhere.
+      </p>
+    </section>
+
+    <!-- PREDICTION -->
+    <section id="predict">
+      <h2>7 · Now you predict it</h2>
+      <div class="predict">
+        <h3>Your turn 🔮</h3>
+        <p>
+          Here's a fractal you haven't seen yet, the <strong>Sierpiński
+          triangle</strong>. Its rule: take a triangle, and replace it with
+          <strong>3 copies of itself, each half the size</strong> (one in each
+          corner, leaving the middle empty). Repeat forever.
+        </p>
+        <p>
+          You now have everything you need. Using <em>D</em> = log&nbsp;<em>N</em> /
+          log&nbsp;<em>s</em>, with <em>N</em>&nbsp;=&nbsp;3 copies and
+          <em>s</em>&nbsp;=&nbsp;2 (each is half-size, so you'd need to magnify 2× to
+          rebuild the original) — <strong>what's its dimension?</strong> Bigger or
+          smaller than the Koch curve's 1.26? Work it out, then reveal.
+        </p>
+        <button type="button" id="p-reveal">Reveal the answer</button>
+        <div class="answer" id="p-answer" hidden>
+          <p>
+            <em>D</em> = log&nbsp;3 / log&nbsp;2 ≈ <strong>1.585</strong>. Higher
+            than the Koch curve — which fits: the Sierpiński triangle spreads
+            through 2D space more thoroughly than a single crinkly line does, so it
+            sits closer to dimension 2. If you predicted "between 1 and 2, and
+            bigger than 1.26," you've got the model. 🎉
+          </p>
+          <canvas id="p-sierpinski" height="180" aria-label="A generated Sierpiński triangle: a triangle made of three half-size copies of itself, repeated."></canvas>
+        </div>
+      </div>
+    </section>
+
+    <!-- SYNTHESIS -->
+    <section id="bigger">
+      <h2>The bigger picture</h2>
+      <p>
+        For two thousand years geometry meant Euclid: lines, circles, smooth
+        idealized forms. But as Mandelbrot put it, <em>"clouds are not spheres,
+        mountains are not cones, coastlines are not circles, and bark is not
+        smooth."</em> The real world is rough, and roughness has its own geometry —
+        one where dimensions are fractions and the interesting action is the same
+        at every scale.
+      </p>
+      <p>
+        The throughline of everything here is almost suspiciously small:
+        <strong>a simple rule, applied to its own output, over and over.</strong>
+        A branch is a smaller tree. A segment becomes four. A point gets squared
+        and shifted. From rules that fit on a napkin you get coastlines of infinite
+        length, dimensions between the integers, and a black beetle of a set with a
+        whole cosmos along its edge.
+      </p>
+      <p>
+        So go back to that piece of romanesco in your hand. It isn't doing anything
+        mystical. It's following a rule — <em>grow a smaller copy of yourself, at an
+        angle, and let that copy do the same</em> — and simply not stopping. Now you
+        can see the napkin behind it. And once you can see it there, you'll start
+        seeing it in the fern on the windowsill, the river on the map, the lightning
+        in the storm, and the branching tree of blood vessels behind your own eyes.
+      </p>
+    </section>
+
+  </main>
+
+  <!-- ── FOOTER ──────────────────────────────────────────────────────── -->
+  <footer class="explainer-footer">
+    <p>Part of <a href="../">Explainers</a> · built for understanding through play.</p>
+  </footer>
+
+</div>
+
+<script>
+/* ════════════════════════════════════════════════════════════════════════
+   Shared demo harness (copied from the template). setupCanvas() gives crisp
+   HiDPI rendering + a reduced-motion-safe animation loop.
+   ════════════════════════════════════════════════════════════════════════ */
+const DEBUG = false;
+const log = (...a) => { if (DEBUG) console.log('[fractals]', ...a); };
+const REDUCE_MOTION = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+
+// Read a CSS custom property (so canvas drawing themes correctly in dark mode).
+function readVar(name, fallback) {
+  return getComputedStyle(document.documentElement).getPropertyValue(name).trim() || fallback;
+}
+
+function setupCanvas(canvas, draw) {
+  const ctx = canvas.getContext('2d');
+  let w = 0, h = 0, raf = 0, playing = false, start = 0;
+
+  function resize() {
+    const dpr = Math.min(window.devicePixelRatio || 1, 2);
+    const rect = canvas.getBoundingClientRect();
+    w = rect.width || canvas.clientWidth || 600;
+    h = parseInt(canvas.getAttribute('height'), 10) || 280;
+    canvas.style.height = h + 'px';
+    canvas.width = Math.round(w * dpr);
+    canvas.height = Math.round(h * dpr);
+    ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
+    redraw();
+  }
+  function redraw(t = 0) { ctx.clearRect(0, 0, w, h); draw(ctx, { w, h, t }); }
+  function frame(now) {
+    if (!playing) return;
+    if (!start) start = now;
+    redraw((now - start) / 1000);
+    raf = requestAnimationFrame(frame);
+  }
+  function play() {
+    if (REDUCE_MOTION || playing) { redraw(); return; }
+    playing = true; start = 0; raf = requestAnimationFrame(frame);
+  }
+  function pause() { playing = false; cancelAnimationFrame(raf); }
+  function toggle() { playing ? pause() : play(); return playing; }
+
+  window.addEventListener('resize', resize, { passive: true });
+  resize();
+  return { redraw, play, pause, toggle, get playing() { return playing; } };
+}
+
+// Slider → state[key] → redraw, keeping the <output> label in sync.
+function bindSlider(id, onChange, fmt) {
+  const input = document.getElementById(id);
+  const out = document.getElementById(id + '-out');
+  const sync = () => { if (out) out.textContent = fmt ? fmt(input.value) : input.value; onChange(parseFloat(input.value)); };
+  input.addEventListener('input', sync);
+  sync();
+}
+
+/* ── Demo 1 — Recursive tree ─────────────────────────────────────────────── */
+(function tree() {
+  const canvas = document.getElementById('tree');
+  if (!canvas) return;
+  const state = { angle: 25, depth: 9, progress: 1 };
+  const DURATION = 1.8;
+  let growing = false;
+
+  function drawTree(ctx, w, h) {
+    const reveal = state.progress * state.depth;
+    const len0 = Math.min(h * 0.30, w * 0.16);
+    const ang = state.angle * Math.PI / 180;
+    const accent = readVar('--accent', '#2563eb');
+    const ink = readVar('--text', '#1a1a1a');
+    function branch(x, y, len, dir, depth) {
+      if (depth > reveal || len < 0.4) return;
+      const grow = Math.min(1, reveal - depth + 1);   // fractional growth of this level
+      const x2 = x + Math.cos(dir) * len * grow;
+      const y2 = y + Math.sin(dir) * len * grow;
+      ctx.lineWidth = Math.max(0.8, (state.depth - depth) * 0.6);
+      ctx.strokeStyle = depth < 2 ? ink : accent;
+      ctx.globalAlpha = depth < 2 ? 1 : 0.85;
+      ctx.beginPath(); ctx.moveTo(x, y); ctx.lineTo(x2, y2); ctx.stroke();
+      if (grow >= 1) {
+        branch(x2, y2, len * 0.72, dir - ang, depth + 1);
+        branch(x2, y2, len * 0.72, dir + ang, depth + 1);
+      }
+    }
+    ctx.globalAlpha = 1;
+    branch(w / 2, h - 8, len0, -Math.PI / 2, 0);
+    ctx.globalAlpha = 1;
+  }
+
+  const view = setupCanvas(canvas, (ctx, { w, h, t }) => {
+    if (growing) {
+      state.progress = Math.min(t / DURATION, 1);
+      if (state.progress >= 1) { growing = false; view.pause(); }
+    }
+    drawTree(ctx, w, h);
+  });
+
+  bindSlider('t-angle', (v) => { state.angle = v; view.redraw(); });
+  bindSlider('t-depth', (v) => { state.depth = v; view.redraw(); });
+  document.getElementById('t-grow').addEventListener('click', () => {
+    if (REDUCE_MOTION) { state.progress = 1; view.redraw(); return; }
+    state.progress = 0; growing = true; view.play();
+  });
+})();
+
+/* ── Koch geometry (shared by Demos 2 and 3) ─────────────────────────────── */
+// One Koch replacement step on a polyline of {x,y} points (y-up math coords).
+function kochStep(pts) {
+  const next = [pts[0]];
+  for (let i = 0; i < pts.length - 1; i++) {
+    const a = pts[i], b = pts[i + 1];
+    const dx = (b.x - a.x) / 3, dy = (b.y - a.y) / 3;
+    const p1 = { x: a.x + dx, y: a.y + dy };
+    const p2 = { x: a.x + 2 * dx, y: a.y + 2 * dy };
+    // peak = p1 rotated copy of (p2-p1) by +60° → bump to the left of travel
+    const ang = Math.PI / 3;
+    const vx = p2.x - p1.x, vy = p2.y - p1.y;
+    const peak = {
+      x: p1.x + vx * Math.cos(ang) - vy * Math.sin(ang),
+      y: p1.y + vx * Math.sin(ang) + vy * Math.cos(ang),
+    };
+    next.push(p1, peak, p2, b);
+  }
+  return next;
+}
+function kochCurve(depth) {
+  let pts = [{ x: 0, y: 0 }, { x: 1, y: 0 }];
+  for (let i = 0; i < depth; i++) pts = kochStep(pts);
+  return pts;
+}
+function kochSnowflake(depth) {
+  // equilateral triangle, clockwise so bumps go outward
+  const h = Math.sqrt(3) / 2;
+  let pts = [{ x: 0, y: 0 }, { x: 0.5, y: h }, { x: 1, y: 0 }, { x: 0, y: 0 }];
+  for (let i = 0; i < depth; i++) pts = kochStep(pts);
+  return pts;
+}
+// Fit math-coords (y-up) into canvas pixels (y-down), centered with margin.
+function fitToCanvas(pts, w, h, margin) {
+  let minx = Infinity, miny = Infinity, maxx = -Infinity, maxy = -Infinity;
+  for (const p of pts) { minx = Math.min(minx, p.x); miny = Math.min(miny, p.y); maxx = Math.max(maxx, p.x); maxy = Math.max(maxy, p.y); }
+  const bw = maxx - minx || 1, bh = maxy - miny || 1;
+  const s = Math.min((w - 2 * margin) / bw, (h - 2 * margin) / bh);
+  const ox = (w - bw * s) / 2, oy = (h - bh * s) / 2;
+  // flip y so math-up becomes screen-up
+  return pts.map((p) => ({ x: ox + (p.x - minx) * s, y: h - (oy + (p.y - miny) * s) }));
+}
+
+/* ── Demo 2 — Koch curve / snowflake ─────────────────────────────────────── */
+(function koch() {
+  const canvas = document.getElementById('koch');
+  if (!canvas) return;
+  const state = { depth: 3, mode: 'curve' };
+
+  const view = setupCanvas(canvas, (ctx, { w, h }) => {
+    const raw = state.mode === 'snowflake' ? kochSnowflake(state.depth) : kochCurve(state.depth);
+    const pts = fitToCanvas(raw, w, h, 28);
+    ctx.strokeStyle = readVar('--accent', '#2563eb');
+    ctx.lineWidth = 2;
+    ctx.lineJoin = 'round';
+    ctx.beginPath();
+    pts.forEach((p, i) => i ? ctx.lineTo(p.x, p.y) : ctx.moveTo(p.x, p.y));
+    ctx.stroke();
+  });
+
+  bindSlider('k-depth', (v) => { state.depth = v; view.redraw(); });
+  const btn = document.getElementById('k-mode');
+  btn.addEventListener('click', () => {
+    state.mode = state.mode === 'curve' ? 'snowflake' : 'curve';
+    btn.textContent = state.mode === 'curve' ? 'Make it a snowflake ❄' : 'Back to a line ─';
+    view.redraw();
+  });
+})();
+
+/* ── Demo 3 — Coastline measured with a ruler ────────────────────────────── */
+(function coast() {
+  const canvas = document.getElementById('coast');
+  if (!canvas) return;
+  const countEl = document.getElementById('c-count');
+  const lenEl = document.getElementById('c-len');
+  // Ruler "level" n: ruler length = base/3^n, curve drawn at Koch depth n.
+  let level = 1;
+
+  const view = setupCanvas(canvas, (ctx, { w, h }) => {
+    const pts = fitToCanvas(kochCurve(level), w, h, 26);
+    // Draw each segment as a "ruler", alternating shades so they're countable.
+    const accent = readVar('--accent', '#2563eb');
+    const muted = readVar('--muted', '#6b6b6b');
+    ctx.lineWidth = 2.5; ctx.lineJoin = 'round'; ctx.lineCap = 'round';
+    for (let i = 0; i < pts.length - 1; i++) {
+      ctx.strokeStyle = i % 2 ? muted : accent;
+      ctx.beginPath(); ctx.moveTo(pts[i].x, pts[i].y); ctx.lineTo(pts[i + 1].x, pts[i + 1].y); ctx.stroke();
+      // tick dots at ruler joints
+      ctx.fillStyle = accent;
+      ctx.beginPath(); ctx.arc(pts[i].x, pts[i].y, 2.2, 0, 7); ctx.fill();
+    }
+    // read-outs (treat the whole coast as 1000 km across)
+    const segments = Math.pow(4, level);
+    const rulerKm = 1000 / Math.pow(3, level);
+    const lengthKm = segments * rulerKm;          // = 1000 * (4/3)^level
+    document.getElementById('c-ruler-out').textContent = rulerKm >= 10 ? Math.round(rulerKm) + ' km' : rulerKm.toFixed(1) + ' km';
+    countEl.textContent = segments.toLocaleString();
+    lenEl.textContent = Math.round(lengthKm).toLocaleString() + ' km';
+  });
+
+  bindSlider('c-ruler', (v) => { level = v; view.redraw(); });
+})();
+
+/* ── Demo 4 — Fractal dimension picker ───────────────────────────────────── */
+(function dimension() {
+  const canvas = document.getElementById('dim');
+  if (!canvas) return;
+  const readout = document.getElementById('dim-readout');
+  const select = document.getElementById('dim-shape');
+
+  const SHAPES = {
+    cantor: { N: 2, s: 3, name: 'Cantor set' },
+    koch: { N: 4, s: 3, name: 'Koch curve' },
+    sierpinski: { N: 3, s: 2, name: 'Sierpiński triangle' },
+    carpet: { N: 8, s: 3, name: 'Sierpiński carpet' },
+  };
+  let shape = 'koch';
+
+  // ── drawing routines for each construction ──
+  function drawCantor(ctx, w, h) {
+    const m = 24, levels = 6, bw = w - 2 * m;
+    const rowH = (h - 2 * m) / levels;
+    ctx.fillStyle = readVar('--accent', '#2563eb');
+    let bars = [[0, 1]];
+    for (let lvl = 0; lvl < levels; lvl++) {
+      for (const [a, b] of bars) ctx.fillRect(m + a * bw, m + lvl * rowH, (b - a) * bw, rowH * 0.6);
+      const nb = [];
+      for (const [a, b] of bars) { const t = (b - a) / 3; nb.push([a, a + t], [b - t, b]); }
+      bars = nb;
+    }
+  }
+  function drawKochShape(ctx, w, h) {
+    const pts = fitToCanvas(kochCurve(4), w, h, 26);
+    ctx.strokeStyle = readVar('--accent', '#2563eb'); ctx.lineWidth = 2; ctx.lineJoin = 'round';
+    ctx.beginPath(); pts.forEach((p, i) => i ? ctx.lineTo(p.x, p.y) : ctx.moveTo(p.x, p.y)); ctx.stroke();
+  }
+  function drawSierpinski(ctx, w, h) {
+    const m = 16, size = Math.min(w - 2 * m, h - 2 * m);
+    const ox = (w - size) / 2, oy = (h - size) / 2 + size;   // bottom-left
+    const A = { x: ox, y: oy }, B = { x: ox + size, y: oy }, C = { x: ox + size / 2, y: oy - size };
+    ctx.fillStyle = readVar('--accent', '#2563eb');
+    (function rec(a, b, c, d) {
+      if (d === 0) { ctx.beginPath(); ctx.moveTo(a.x, a.y); ctx.lineTo(b.x, b.y); ctx.lineTo(c.x, c.y); ctx.closePath(); ctx.fill(); return; }
+      const ab = { x: (a.x + b.x) / 2, y: (a.y + b.y) / 2 };
+      const bc = { x: (b.x + c.x) / 2, y: (b.y + c.y) / 2 };
+      const ca = { x: (c.x + a.x) / 2, y: (c.y + a.y) / 2 };
+      rec(a, ab, ca, d - 1); rec(ab, b, bc, d - 1); rec(ca, bc, c, d - 1);
+    })(A, B, C, 6);
+  }
+  function drawCarpet(ctx, w, h) {
+    const m = 16, size = Math.min(w - 2 * m, h - 2 * m);
+    const ox = (w - size) / 2, oy = (h - size) / 2;
+    ctx.fillStyle = readVar('--accent', '#2563eb');
+    (function rec(x, y, s, d) {
+      if (d === 0) { ctx.fillRect(x, y, s, s); return; }
+      const t = s / 3;
+      for (let i = 0; i < 3; i++) for (let j = 0; j < 3; j++) {
+        if (i === 1 && j === 1) continue;       // skip the middle ninth
+        rec(x + i * t, y + j * t, t, d - 1);
+      }
+    })(ox, oy, size, 4);
+  }
+  const DRAW = { cantor: drawCantor, koch: drawKochShape, sierpinski: drawSierpinski, carpet: drawCarpet };
+
+  const view = setupCanvas(canvas, (ctx, { w, h }) => { DRAW[shape](ctx, w, h); });
+
+  function update() {
+    const { N, s, name } = SHAPES[shape];
+    const D = Math.log(N) / Math.log(s);
+    readout.innerHTML =
+      name + ': <strong>' + N + '</strong> copies, each <strong>1/' + s + '</strong> the size &nbsp;→&nbsp; ' +
+      'D = log&nbsp;' + N + ' / log&nbsp;' + s + ' = <span class="big">' + D.toFixed(3) + '</span>';
+    view.redraw();
+  }
+  select.addEventListener('change', () => { shape = select.value; update(); });
+  update();
+})();
+
+/* ── Demo 5 — Mandelbrot explorer (standalone renderer) ──────────────────── */
+(function mandelbrot() {
+  const canvas = document.getElementById('mandel');
+  if (!canvas) return;
+  const ctx = canvas.getContext('2d');
+  const RW = 640;                          // internal render width (CSS scales it up)
+  const RH = Math.round(RW * 420 / 800);   // keep ~the figure's aspect
+  canvas.width = RW; canvas.height = RH;
+  canvas.style.width = '100%'; canvas.style.height = 'auto';
+
+  const HOME = { cx: -0.6, cy: 0, half: 1.75 };  // half = half-width in complex units
+  let view = { ...HOME };
+  let maxIter = 160;
+
+  // Smooth blue→white escape-time palette (reads on light & dark surfaces).
+  function paint(n, zx, zy) {
+    if (n >= maxIter) return [10, 10, 18];                 // inside the set → ink
+    let t = (n + 1 - Math.log(Math.log(Math.sqrt(zx * zx + zy * zy))) / Math.log(2)) / maxIter;
+    t = Math.max(0, Math.min(1, t));
+    const u = Math.sqrt(t);
+    return [
+      Math.round(8 + 247 * Math.pow(u, 1.5)),
+      Math.round(18 + 200 * Math.pow(u, 1.0)),
+      Math.round(70 + 175 * Math.pow(u, 0.55)),
+    ];
+  }
+
+  function render() {
+    const img = ctx.createImageData(RW, RH);
+    const data = img.data;
+    const aspect = RH / RW;
+    const halfX = view.half, halfY = view.half * aspect;
+    const xmin = view.cx - halfX, ymin = view.cy - halfY;
+    const dx = (2 * halfX) / RW, dy = (2 * halfY) / RH;
+    for (let py = 0; py < RH; py++) {
+      const y0 = ymin + py * dy;
+      for (let px = 0; px < RW; px++) {
+        const x0 = xmin + px * dx;
+        let zx = 0, zy = 0, n = 0;
+        while (zx * zx + zy * zy <= 4 && n < maxIter) {
+          const xt = zx * zx - zy * zy + x0;
+          zy = 2 * zx * zy + y0;
+          zx = xt; n++;
+        }
+        const [r, g, b] = paint(n, zx, zy);
+        const o = (py * RW + px) * 4;
+        data[o] = r; data[o + 1] = g; data[o + 2] = b; data[o + 3] = 255;
+      }
+    }
+    ctx.putImageData(img, 0, 0);
+    log('mandel render', view, 'iter', maxIter);
+  }
+
+  canvas.addEventListener('click', (e) => {
+    const rect = canvas.getBoundingClientRect();
+    const aspect = RH / RW;
+    const halfX = view.half, halfY = view.half * aspect;
+    const fx = (e.clientX - rect.left) / rect.width;       // 0..1
+    const fy = (e.clientY - rect.top) / rect.height;
+    view.cx = (view.cx - halfX) + fx * 2 * halfX;
+    view.cy = (view.cy - halfY) + fy * 2 * halfY;
+    view.half *= 0.5;                                      // zoom in
+    render();
+  });
+
+  bindSlider('m-iter', (v) => { maxIter = v; render(); });
+  document.getElementById('m-reset').addEventListener('click', () => { view = { ...HOME }; render(); });
+  document.getElementById('m-out').addEventListener('click', () => { view.half = Math.min(view.half * 2, HOME.half); render(); });
+  document.getElementById('m-seahorse').addEventListener('click', () => { view = { cx: -0.745, cy: 0.113, half: 0.02 }; render(); });
+  document.getElementById('m-mini').addEventListener('click', () => { view = { cx: -1.7497, cy: 0, half: 0.0035 }; render(); });
+
+  render();
+})();
+
+/* ── Prediction reveal — Sierpiński triangle ─────────────────────────────── */
+(function predict() {
+  const btn = document.getElementById('p-reveal');
+  const answer = document.getElementById('p-answer');
+  if (!btn) return;
+  let drawn = false;
+  btn.addEventListener('click', () => {
+    answer.hidden = !answer.hidden;
+    btn.textContent = answer.hidden ? 'Reveal the answer' : 'Hide the answer';
+    if (!answer.hidden && !drawn) {
+      drawn = true;
+      const c = document.getElementById('p-sierpinski');
+      setupCanvas(c, (ctx, { w, h }) => {
+        const m = 12, size = Math.min(w - 2 * m, h - 2 * m);
+        const ox = (w - size) / 2, oy = (h - size) / 2 + size;
+        const A = { x: ox, y: oy }, B = { x: ox + size, y: oy }, C = { x: ox + size / 2, y: oy - size };
+        ctx.fillStyle = readVar('--accent', '#2563eb');
+        (function rec(a, b, cc, d) {
+          if (d === 0) { ctx.beginPath(); ctx.moveTo(a.x, a.y); ctx.lineTo(b.x, b.y); ctx.lineTo(cc.x, cc.y); ctx.closePath(); ctx.fill(); return; }
+          const ab = { x: (a.x + b.x) / 2, y: (a.y + b.y) / 2 };
+          const bc = { x: (b.x + cc.x) / 2, y: (b.y + cc.y) / 2 };
+          const ca = { x: (cc.x + a.x) / 2, y: (cc.y + a.y) / 2 };
+          rec(a, ab, ca, d - 1); rec(ab, b, bc, d - 1); rec(ca, bc, cc, d - 1);
+        })(A, B, C, 6);
+      });
+    }
+  });
+})();
+</script>
+</body>
+</html>
