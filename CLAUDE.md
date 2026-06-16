@@ -51,7 +51,7 @@ The explanation matters more than the visuals. Aim for *accurate AND accessible*
   "Wait, why isn't the sky violet?", "Why should I care?". Number the main ones.
 - **Follow the arc:** intuition → core mechanism → the complication a smart reader
   just thought of → real-world applications → a **prediction challenge** → "the
-  bigger picture" synthesis.
+  bigger picture" synthesis → a **further-reading list**.
 - **One idea per paragraph. Build, don't dump.** Each step should feel inevitable
   given the last.
 - **Analogy for every hard concept.** Resonance ≈ pushing a kid on a swing;
@@ -69,8 +69,15 @@ The explanation matters more than the visuals. Aim for *accurate AND accessible*
   you actually need equations.
 - **End by closing the loop** — return to the opening scene, now that the reader
   can see it differently.
-- **Length:** roughly **2,000–4,000 words**. Long enough to truly land it, short
-  enough to finish.
+- **Then add a "Further reading" list** (after the synthesis), in the spirit of
+  Paras Chopra's explainers: a short, *annotated* set of 5–10 excellent resources
+  — a primary source, a great visual video, a book, an interactive tool — each
+  with one line on why it's worth their time. Make the titles clickable links.
+- **Length:** there's no hard cap — go as long as the topic genuinely needs
+  (commonly **3,000–6,000+ words**, more for big topics). Length is good *when
+  every section earns its place*: prefer adding another demo, a worked example, or
+  a deeper layer over truncating. The enemy is padding, never length — cut filler,
+  keep substance.
 - **No can-kicking:** never explain a term with another unexplained term. If you
   name something, you've already built the intuition for it.
 
@@ -157,6 +164,7 @@ text blocks, `figure.demo` (canvas/SVG + `.controls` + numbered `figcaption`),
 - ❌ Root-absolute links (`/slug/`) — they break on Pages.
 - ❌ Auto-playing motion that ignores `prefers-reduced-motion`.
 - ❌ Decorative demos that don't teach the specific point in the adjacent text.
+- ❌ Ending cold with no "Further reading" — give a curious reader somewhere to go next.
 
 ---
 

@@ -218,7 +218,7 @@ h1 {
     <p class="kicker"><a href="../">← All explainers</a></p>
     <h1>How can a shape be infinitely detailed?</h1>
     <p class="subtitle">Ferns, coastlines, and the Mandelbrot set — all grown from a rule you could write on a napkin.</p>
-    <p class="byline">Explainers · <time datetime="2026-06">Jun 2026</time> · 13 min read</p>
+    <p class="byline">Explainers · <time datetime="2026-06">Jun 2026</time> · 18 min read</p>
   </header>
 
   <!-- ── TABLE OF CONTENTS ───────────────────────────────────────────── -->
@@ -230,9 +230,11 @@ h1 {
       <li><a href="#s3">Wait — how long is the coastline?</a></li>
       <li><a href="#s4">So what <em>dimension</em> is it?</a></li>
       <li><a href="#s5">The Mandelbrot set: a universe from z² + c</a></li>
+      <li><a href="#chaos">Order from pure randomness</a></li>
       <li><a href="#s6">Why should I care?</a></li>
       <li><a href="#predict">Now you predict it</a></li>
       <li><a href="#bigger">The bigger picture</a></li>
+      <li><a href="#further">Further reading</a></li>
     </ol>
   </nav>
 
@@ -403,6 +405,17 @@ h1 {
         ruler-independent way to describe how big this thing is… what's the right
         one?
       </p>
+      <p>
+        This wasn't a thought experiment. In the 1950s the meteorologist Lewis Fry
+        Richardson, digging into what makes neighbouring countries go to war,
+        noticed that reference books couldn't even agree on border lengths: Spain
+        listed its border with Portugal as 987&nbsp;km, while Portugal called the
+        very same border 1,214&nbsp;km. Neither was lying — they'd just walked it
+        with different-sized dividers. Mandelbrot seized on Richardson's data and
+        gave the effect its real name: these coasts and borders have a
+        <em>fractional dimension</em> greater than 1, and <em>that</em> number — not
+        any single "length" — is what's genuinely stable about them.
+      </p>
     </section>
 
     <!-- SECTION 4 — fractal dimension -->
@@ -449,6 +462,17 @@ h1 {
         coastline paradox was groping at: the curve is too crinkly to be a
         1-dimensional line, but too thin to fill 2-dimensional area. Its
         roughness <em>is</em> the 0.26.
+      </p>
+      <p>
+        "But a real coastline isn't made of exact copies," you might object — and
+        you're right. For messy shapes there's a more general trick called
+        <strong>box-counting</strong>: drop a grid of boxes of size <em>ε</em> over
+        the shape, count how many boxes it touches, then shrink <em>ε</em> and count
+        again. For a smooth line the count grows like 1/<em>ε</em>; for a filled
+        patch, like 1/<em>ε</em>². For a coastline it grows somewhere in between —
+        and that exponent is its dimension. Britain's west coast clocks in around
+        <strong>1.25</strong>; the fjord-shredded coast of Norway, closer to
+        <strong>1.5</strong>. Roughness, made into a number.
       </p>
       <p>
         Pick a shape below and watch the formula land on a number between the
@@ -537,11 +561,68 @@ h1 {
         quite the same twice. It's self-similar in spirit, not in photocopy. One
         line of arithmetic, iterated, holds an endless and endlessly varied world.
       </p>
+      <p>
+        Astonishingly, almost nobody had <em>seen</em> this before 1980, when
+        Benoît Mandelbrot — with access to IBM's computers — first plotted it and
+        found that the scattered "islands" dusted around the main body were really
+        joined to it by filaments too thin for the printer to draw. Every point
+        <em>c</em> also has its own twin fractal, a <strong>Julia set</strong>, and
+        the Mandelbrot set turns out to be a perfect index of them: a master map of
+        an infinite family of fractals, all conjured by that same one-line rule.
+      </p>
+      <details class="aside">
+        <summary>Well, ackshually 🧐</summary>
+        <p>
+          How crinkled is its edge? In 1991 Mitsuhiro Shishikura proved the
+          boundary has fractal dimension <em>exactly 2</em> — the most a curve in
+          the plane can have. The border of the Mandelbrot set is so infinitely
+          wrinkled that, in a precise sense, it nearly <em>fills area</em> despite
+          being a one-dimensional outline. About as rough as roughness gets.
+        </p>
+      </details>
     </section>
 
-    <!-- SECTION 6 — applications -->
+    <!-- SECTION 6 — the chaos game -->
+    <section id="chaos">
+      <h2>6 · Order from pure randomness</h2>
+      <p>
+        One last way to make a fractal — and it's the strangest, because it runs on
+        <em>chance</em>. It's called the <strong>chaos game</strong>, and the rules
+        take ten seconds to learn:
+      </p>
+      <blockquote>Mark three dots — the corners of a triangle. Drop your pencil
+        anywhere. Now repeat: pick a corner at random, slide your pencil
+        <em>halfway</em> toward it, and make a dot. Again. Again.</blockquote>
+      <p>
+        Every dot lands at a spot chosen by pure coin-flips, so the result
+        <em>should</em> be a formless smear. It isn't. Press play and watch order
+        precipitate out of the randomness — the <strong>Sierpiński triangle</strong>,
+        assembled from nothing but chance.
+      </p>
+
+      <figure class="demo">
+        <canvas class="stage" id="chaos-c" height="340" aria-label="The chaos game: randomly placed points gradually reveal a Sierpiński triangle."></canvas>
+        <div class="controls">
+          <button type="button" id="ch-play">▶ Drop points</button>
+          <button type="button" id="ch-reset" class="secondary">Reset</button>
+          <div class="dim-readout" style="text-align:left;padding:0">
+            <div>Points dropped: <strong id="ch-count">0</strong></div>
+          </div>
+        </div>
+        <figcaption><span class="num">Demo 6.</span> Each dot is placed at random — yet none of them <em>ever</em> land in the central voids, at any scale. The holes are forced by the single rule "always jump halfway to a corner." Randomness in, fractal out.</figcaption>
+      </figure>
+
+      <p>
+        That's the whole thesis of this piece, sharpened to its point: you don't
+        need a designer placing the detail, and you don't even need
+        <em>determinism</em>. A simple rule, repeated — even a <em>random</em> one —
+        is enough to summon structure that's intricate at every scale.
+      </p>
+    </section>
+
+    <!-- SECTION 7 — applications -->
     <section id="s6">
-      <h2>6 · Why should I care?</h2>
+      <h2>7 · Why should I care?</h2>
       <p>
         Because fractals are how nature solves a recurring problem: <em>pack a huge
         amount of something into a small space, cheaply.</em> When you need maximum
@@ -582,14 +663,15 @@ h1 {
 
     <!-- PREDICTION -->
     <section id="predict">
-      <h2>7 · Now you predict it</h2>
+      <h2>8 · Now you predict it</h2>
       <div class="predict">
         <h3>Your turn 🔮</h3>
         <p>
-          Here's a fractal you haven't seen yet, the <strong>Sierpiński
-          triangle</strong>. Its rule: take a triangle, and replace it with
-          <strong>3 copies of itself, each half the size</strong> (one in each
-          corner, leaving the middle empty). Repeat forever.
+          You just watched the chaos game conjure the <strong>Sierpiński
+          triangle</strong> — three copies of itself, each half the size, one in
+          each corner with the middle left empty, forever. Here's the real test of
+          whether the model is yours: <em>without</em> peeking back at the dimension
+          demo, work out its dimension from scratch.
         </p>
         <p>
           You now have everything you need. Using <em>D</em> = log&nbsp;<em>N</em> /
@@ -605,7 +687,9 @@ h1 {
             than the Koch curve — which fits: the Sierpiński triangle spreads
             through 2D space more thoroughly than a single crinkly line does, so it
             sits closer to dimension 2. If you predicted "between 1 and 2, and
-            bigger than 1.26," you've got the model. 🎉
+            bigger than 1.26," you've got the model. 🎉 And notice — this is the
+            very triangle the chaos game built from random dots, now drawn by exact
+            recursion instead. Same fractal, two completely different recipes.
           </p>
           <canvas id="p-sierpinski" height="180" aria-label="A generated Sierpiński triangle: a triangle made of three half-size copies of itself, repeated."></canvas>
         </div>
@@ -621,7 +705,8 @@ h1 {
         mountains are not cones, coastlines are not circles, and bark is not
         smooth."</em> The real world is rough, and roughness has its own geometry —
         one where dimensions are fractions and the interesting action is the same
-        at every scale.
+        at every scale. Mandelbrot coined the very word <em>fractal</em> for it in
+        1975, from the Latin <em>fractus</em> — "broken."
       </p>
       <p>
         The throughline of everything here is almost suspiciously small:
@@ -639,6 +724,19 @@ h1 {
         seeing it in the fern on the windowsill, the river on the map, the lightning
         in the storm, and the branching tree of blood vessels behind your own eyes.
       </p>
+    </section>
+
+    <!-- FURTHER READING -->
+    <section id="further">
+      <h2>Further reading</h2>
+      <ul>
+        <li><a href="https://www.youtube.com/watch?v=gB9n2gHsHN4" rel="noopener">"Fractals are typically not self-similar"</a> by 3Blue1Brown — the clearest visual tour of fractal dimension anywhere; the perfect next step after this piece.</li>
+        <li><a href="https://www.youtube.com/watch?v=kbKtFN71Lfs" rel="noopener">"Chaos Game"</a> by Numberphile — Ben Sparks plays the randomness-makes-fractals trick you just tried, then bends the rules to see what else falls out.</li>
+        <li><a href="https://en.wikipedia.org/wiki/How_Long_Is_the_Coast_of_Britain%3F_Statistical_Self-Similarity_and_Fractional_Dimension" rel="noopener">"How Long Is the Coast of Britain?"</a> (Mandelbrot, 1967) — the short, readable paper that started the whole field.</li>
+        <li><a href="https://en.wikipedia.org/wiki/Mandelbrot_set" rel="noopener">Mandelbrot set</a> (Wikipedia) — the rabbit hole: deep-zoom videos, Julia sets, and the maths behind the colours.</li>
+        <li><em>The Fractal Geometry of Nature</em> by Benoît Mandelbrot — the sprawling 1982 book that named the field and argued the natural world is fractal to its core.</li>
+        <li><a href="https://paulbourke.net/fractals/" rel="noopener">Paul Bourke's fractal archive</a> — a vast, practical collection of algorithms for when you want to code your own.</li>
+      </ul>
     </section>
 
   </main>
@@ -1006,6 +1104,58 @@ function fitToCanvas(pts, w, h, margin) {
   document.getElementById('m-mini').addEventListener('click', () => { view = { cx: -1.7497, cy: 0, half: 0.0035 }; render(); });
 
   render();
+})();
+
+/* ── Demo 6 — The chaos game (randomness → Sierpiński) ───────────────────── */
+(function chaosGame() {
+  const canvas = document.getElementById('chaos-c');
+  if (!canvas) return;
+  const countEl = document.getElementById('ch-count');
+  const playBtn = document.getElementById('ch-play');
+  const verts = [{ x: 0.5, y: 0.04 }, { x: 0.04, y: 0.97 }, { x: 0.97, y: 0.97 }]; // triangle corners (0..1)
+  const CAP = 16000, PER_FRAME = 160;
+  let pts = [];
+  let cur = { x: Math.random(), y: Math.random() };
+  let raf = 0, playing = false;
+
+  function addPoints(n) {
+    for (let i = 0; i < n && pts.length < CAP; i++) {
+      const v = verts[(Math.random() * 3) | 0];                 // pick a corner at random
+      cur = { x: (cur.x + v.x) / 2, y: (cur.y + v.y) / 2 };     // jump halfway toward it
+      pts.push(cur);
+    }
+    if (countEl) countEl.textContent = pts.length.toLocaleString();
+  }
+
+  const view = setupCanvas(canvas, (ctx, { w, h }) => {
+    const m = 14, sw = w - 2 * m, sh = h - 2 * m;
+    ctx.fillStyle = readVar('--accent', '#2563eb');
+    for (const p of pts) ctx.fillRect(m + p.x * sw, m + p.y * sh, 1.5, 1.5);
+  });
+
+  function stop() {
+    playing = false; cancelAnimationFrame(raf);
+    playBtn.textContent = pts.length >= CAP ? '✓ Done' : '▶ Drop points';
+  }
+  function loop() {
+    if (!playing) return;
+    addPoints(PER_FRAME); view.redraw();
+    if (pts.length >= CAP) { stop(); return; }
+    raf = requestAnimationFrame(loop);
+  }
+  function start() { playing = true; playBtn.textContent = '⏸ Pause'; raf = requestAnimationFrame(loop); }
+
+  playBtn.addEventListener('click', () => { if (pts.length >= CAP) return; playing ? stop() : start(); });
+  document.getElementById('ch-reset').addEventListener('click', () => {
+    stop(); pts = []; cur = { x: Math.random(), y: Math.random() };
+    if (countEl) countEl.textContent = '0'; playBtn.textContent = '▶ Drop points'; view.redraw();
+  });
+
+  if (REDUCE_MOTION) {                  // no animation: show the finished attractor at once
+    addPoints(CAP); view.redraw(); playBtn.textContent = '✓ Done'; playBtn.disabled = true;
+  } else {
+    addPoints(600); view.redraw();      // seed a faint hint; the reader presses play to fill it in
+  }
 })();
 
 /* ── Prediction reveal — Sierpiński triangle ─────────────────────────────── */

@@ -16,3 +16,11 @@ A running log of the prompts that shaped this project.
 ## 2026-06-16 — First explainer
 
 > Okay, write on the topic of fractals.
+
+---
+
+## 2026-06-16 — Article length + further reading
+
+> two things to update in the main repo instructions and then update for this article -
+> * The article length can be longer.
+> * There can be a further resources/further reading section at the end like Paras' posts
