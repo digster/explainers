@@ -27,18 +27,6 @@
   --shadow: 0 1px 2px rgba(20,20,20,.05), 0 10px 30px rgba(20,20,20,.05);
   --radius: 12px;
 }
-@media (prefers-color-scheme: dark) {
-  :root {
-    --bg: #14151a;
-    --surface: #1c1e26;
-    --text: #e9e9ee;
-    --muted: #9a9aa6;
-    --border: #2c2f3a;
-    --accent: #7aa2ff;
-    --accent-soft: #1d2740;
-    --shadow: 0 1px 2px rgba(0,0,0,.4), 0 10px 30px rgba(0,0,0,.35);
-  }
-}
 
 * { box-sizing: border-box; }
 body {
@@ -63,31 +51,46 @@ h1 {
 .tagline { font-size: 1.3rem; color: var(--muted); margin: 0; max-width: 36ch; }
 .tagline em { color: var(--text); font-style: italic; }
 
-/* Card grid */
+/* Per-card hue palette. Each class supplies three variables the card styling
+   reads: --c (the accent for the date eyebrow, hover border, focus ring),
+   --t1 (the soft "glow" tint), and --bd (the resting border). Cards cycle
+   through these via the PALETTE array in the render script below. */
+.hue-blue   { --c: #2563eb; --t1: #eaf0ff; --bd: #d7e3fb; }
+.hue-teal   { --c: #0d9488; --t1: #e2f5f1; --bd: #c4eae2; }
+.hue-amber  { --c: #c2710c; --t1: #fbf0dc; --bd: #f0ddb4; }
+.hue-violet { --c: #7c3aed; --t1: #f1ebfe; --bd: #e2d6fb; }
+.hue-rose   { --c: #e11d48; --t1: #fdebef; --bd: #f7d2da; }
+.hue-green  { --c: #15803d; --t1: #e9f6e6; --bd: #cfe9c8; }
+
+/* Article list — a single, comfortably-narrow column of full-width cards.
+   (A flex column avoids the auto-fill grid leaving a lone card stranded in
+   empty tracks when there are only a few explainers.) */
 .grid {
-  display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(260px, 1fr));
-  gap: 1.25rem;
+  display: flex; flex-direction: column;
+  gap: .85rem;
+  max-width: 680px;
   margin: 0;
   padding: 0;
   list-style: none;
 }
 .card {
   display: flex; flex-direction: column;
-  background: var(--surface);
-  border: 1px solid var(--border);
+  /* Soft "corner glow": the card's hue blooms from the top-left and fades into
+     the paper background. */
+  background: radial-gradient(130% 130% at 0% 0%, var(--t1), var(--bg) 62%);
+  border: 1px solid var(--bd);
   border-radius: var(--radius);
-  box-shadow: var(--shadow);
   text-decoration: none;
   color: inherit;
-  padding: 1.5rem;
-  transition: transform .15s ease, border-color .15s ease;
+  padding: 1.25rem 1.5rem;
+  transition: transform .15s ease, border-color .15s ease, box-shadow .15s ease;
 }
-.card:hover { transform: translateY(-3px); border-color: var(--accent); }
-.card:focus-visible { outline: 2px solid var(--accent); outline-offset: 3px; }
-.card h2 { font-family: var(--font-ui); font-size: 1.25rem; line-height: 1.25; margin: 0 0 .5rem; letter-spacing: -0.01em; }
-.card p { font-size: 1rem; color: var(--muted); margin: 0 0 1.25rem; flex: 1; }
-.card .date { font-family: var(--font-ui); font-size: .8rem; color: var(--muted); text-transform: uppercase; letter-spacing: .06em; }
+.card:hover { transform: translateY(-2px); border-color: var(--c); box-shadow: 0 8px 22px -12px var(--c); }
+.card:focus-visible { outline: 2px solid var(--c); outline-offset: 3px; }
+.card h2 { font-family: var(--font-ui); font-size: 1.25rem; line-height: 1.25; margin: 0 0 .4rem; letter-spacing: -0.01em; }
+.card p { font-size: 1rem; color: var(--muted); margin: 0; }
+/* The date now reads as a small colored eyebrow above the title. */
+.card .date { font-family: var(--font-ui); font-size: .72rem; color: var(--c); text-transform: uppercase; letter-spacing: .08em; margin-bottom: .45rem; }
 
 /* Empty state (shown until the first explainer is added) */
 .empty {
@@ -144,6 +147,10 @@ const EXPLAINERS = [
   //   description: 'The Fourier Transform, built up from a single pure tone.', date: 'Jun 2026' },
 ];
 
+/* Hues are assigned by position and cycle, so adding an explainer needs no
+   per-entry color — the manifest entry above stays a single line. */
+const PALETTE = ['hue-blue', 'hue-teal', 'hue-amber', 'hue-violet', 'hue-rose', 'hue-green'];
+
 (function renderGrid() {
   const grid = document.getElementById('grid');
 
@@ -157,14 +164,16 @@ const EXPLAINERS = [
     return;
   }
 
-  // Build cards. Each links to ./<slug>/ (relative — works under the Pages subpath).
-  grid.innerHTML = EXPLAINERS.map(function (e) {
+  // Build cards. Each links to ./<slug>/ (relative — works under the Pages subpath)
+  // and gets a cycling hue class; the date renders first as a colored eyebrow.
+  grid.innerHTML = EXPLAINERS.map(function (e, i) {
+    var hue = PALETTE[i % PALETTE.length];
     return (
       '<li>' +
-        '<a class="card" href="./' + encodeURIComponent(e.slug) + '/">' +
+        '<a class="card ' + hue + '" href="./' + encodeURIComponent(e.slug) + '/">' +
+          '<span class="date">' + escapeHtml(e.date) + '</span>' +
           '<h2>' + escapeHtml(e.title) + '</h2>' +
           '<p>' + escapeHtml(e.description) + '</p>' +
-          '<span class="date">' + escapeHtml(e.date) + '</span>' +
         '</a>' +
       '</li>'
     );

@@ -121,9 +121,9 @@ Interactivity is the spine, not garnish. The reader should *do*, not just read.
 - **Accessible:** label every control (`<label for>`), give canvases an
   `aria-label` describing what they show, ensure keyboard focus works
   (`:focus-visible` is styled), and provide `alt` text on any `<img>`.
-- **Dark mode** comes free via the `prefers-color-scheme` block — don't hardcode
-  colors; use the CSS variables (`var(--accent)`, etc.), including inside canvas
-  drawing code (read them with `getComputedStyle`).
+- **Theme through the CSS variables** — never hardcode colors; always use
+  `var(--accent)` etc., including inside canvas drawing code (read them with
+  `getComputedStyle`). The site is light-only — there is no dark-mode block.
 - **Performance:** keep it light. No giant assets. Pause animation loops when not
   needed.
 
@@ -133,7 +133,7 @@ Interactivity is the spine, not garnish. The reader should *do*, not just read.
 
 Defined in `template/index.html`; summarized here. Use the variables, not raw hex.
 
-| Token | Value (light) | Use |
+| Token | Value | Use |
 | --- | --- | --- |
 | `--font-prose` | Georgia / Iowan serif stack | body prose |
 | `--font-ui` | system sans stack | headings, controls, captions |
@@ -148,10 +148,9 @@ Defined in `template/index.html`; summarized here. Use the variables, not raw he
 | `--measure` | `680px` | reading column width |
 | `--radius` | `12px` | corner rounding |
 
-A `prefers-color-scheme: dark` block remaps all colors. Components: `.prose`
-text blocks, `figure.demo` (canvas/SVG + `.controls` + numbered `figcaption`),
-`<details class="aside">` for "ackshually" notes, `.predict` challenge box,
-`.toc`, and the header/footer.
+The palette is light-only. Components: `.prose` text blocks, `figure.demo`
+(canvas/SVG + `.controls` + numbered `figcaption`), `<details class="aside">`
+for "ackshually" notes, `.predict` challenge box, `.toc`, and the header/footer.
 
 ---
 

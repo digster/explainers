@@ -29,18 +29,6 @@
   --wide: 880px;
   --radius: 12px;
 }
-@media (prefers-color-scheme: dark) {
-  :root {
-    --bg: #14151a;
-    --surface: #1c1e26;
-    --text: #e9e9ee;
-    --muted: #9a9aa6;
-    --border: #2c2f3a;
-    --accent: #7aa2ff;
-    --accent-soft: #1d2740;
-    --shadow: 0 1px 2px rgba(0,0,0,.4), 0 10px 30px rgba(0,0,0,.35);
-  }
-}
 
 * { box-sizing: border-box; }
 html { -webkit-text-size-adjust: 100%; }
@@ -757,7 +745,7 @@ const DEBUG = false;
 const log = (...a) => { if (DEBUG) console.log('[fractals]', ...a); };
 const REDUCE_MOTION = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
 
-// Read a CSS custom property (so canvas drawing themes correctly in dark mode).
+// Read a CSS custom property (so canvas drawing matches the CSS theme).
 function readVar(name, fallback) {
   return getComputedStyle(document.documentElement).getPropertyValue(name).trim() || fallback;
 }

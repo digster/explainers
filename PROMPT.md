@@ -24,3 +24,13 @@ A running log of the prompts that shaped this project.
 > two things to update in the main repo instructions and then update for this article -
 > * The article length can be longer.
 > * There can be a further resources/further reading section at the end like Paras' posts
+
+---
+
+## 2026-06-16 — Landing-page card redesign + remove dark mode
+
+> The card structure for article list does not look good. Suggest alternatives. First show me visually before making a plan. Only make the plan once I approve it.
+
+> [chose] Refined cards → "Option D but try to make it colorful and better looking." → tinted cards "with gradient styles", auto-cycle palette → "G3 — Corner glow".
+
+> Do not have a dark mode at all. [scope: entire site]
